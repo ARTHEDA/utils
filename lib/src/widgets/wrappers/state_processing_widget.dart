@@ -63,7 +63,7 @@ class StateProcessingWidget<T> extends StatelessWidget {
             );
         return sliverOr(emptyWidget);
       }
-      if (LoadMoreWrapper.at(context) && pending && isSliver) {
+      if (isSliver && pending && LoadMoreWrapper.at(context)) {
         return MultiSliver(
           children: [
             builder(context, rxv.data),

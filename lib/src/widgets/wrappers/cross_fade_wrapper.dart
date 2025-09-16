@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class CrossFadeWrapper extends StatelessWidget {
   const CrossFadeWrapper({
     super.key,
     this.show = true,
     this.fullWidth = true,
+    this.duration = const Duration(milliseconds: 200),
     required this.child,
   });
 
   final bool show;
   final bool fullWidth;
+  final Duration duration;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedCrossFade(
-      duration: 200.milliseconds,
+      duration: duration,
       firstChild: SizedBox(
-        width: double.infinity,
+        width: fullWidth ? double.infinity : null,
         child: child,
       ),
       secondChild: const SizedBox(

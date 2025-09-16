@@ -21,7 +21,7 @@ extension DateFromString on String {
     return DateFormat(format).tryParseStrict(this);
   }
 
-  DateTime get parseDateTime {
+  DateTime get parseDateTimeToLocal {
     return DateTime.parse(this).toLocal();
   }
 }

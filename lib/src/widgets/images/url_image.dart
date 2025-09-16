@@ -16,7 +16,7 @@ class UrlImage extends StatelessWidget {
     this.shape = BoxShape.rectangle,
   });
 
-  Widget openable() {
+  Widget openable({Widget? closeWidget}) {
     return Builder(
       builder: (context) {
         if (url == null) {
@@ -35,11 +35,12 @@ class UrlImage extends StatelessWidget {
                 ),
               ),
             ),
-            closeWidget: const Icon(
-              Icons.close_rounded,
-              size: 30,
-              color: Colors.white,
-            ),
+            closeWidget: closeWidget ??
+                const Icon(
+                  Icons.close_rounded,
+                  size: 30,
+                  color: Colors.white,
+                ),
           ),
           child: Hero(
             tag: url!,

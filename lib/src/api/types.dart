@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:async/async.dart';
 import 'package:either_dart/either.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:retry/retry.dart' as r;
 import 'package:utils/src/utils/extensions/closures.dart';
@@ -34,10 +35,6 @@ class ApiException implements Exception {
 
 typedef FutureE<T> = Future<Either<ApiException, T>>;
 
-class RxVn<T> extends RxV<T?> {
-  RxVn({T? initial, ApiState state = ApiState.loaded}) : super(initial, state: state);
-}
-
 class RxV<T> {
   RxV(T initial, {ApiState state = ApiState.loaded})
       : selectData = initial.obs,
@@ -62,21 +59,18 @@ class RxV<T> {
   bool get isNotLoaded => state.isNotLoaded;
   bool get isNotError => state.isNotError;
 
-  void map<CustomErrorType>(
-    void Function(T) onData, [
+  void map<CustomErrorType>({
+    void Function(T)? onData,
     void Function(Err)? onError,
-    void Function(CustomErrorType)? onCustomError,
-  ]) {
+  }) {
     if (isLoaded) {
-      onData(data);
-    } else if (error is CustomErrorType && CustomErrorType != Err && CustomErrorType != dynamic) {
-      onCustomError?.call(error as CustomErrorType);
-    } else {
+      onData?.call(data);
+    } else if (isError) {
       onError?.call(error);
     }
   }
 
-  void setPending() => selectState.value = ApiState.pending;
+  void setState([ApiState state = ApiState.pending]) => selectState.value = state;
 
   set data(T data) {
     selectData.value = data;
@@ -85,8 +79,8 @@ class RxV<T> {
   }
 
   set error(Err error) {
-    selectState.value = ApiState.error;
     selectError.value = error;
+    selectState.value = ApiState.error;
   }
 
   void fromEither(Either<ApiException, T> resp) {
@@ -97,10 +91,11 @@ class RxV<T> {
     if (isPending) {
       return;
     }
-    setPending();
+    setState();
     fromEither(await (retry ? retryE(func) : func()));
   }
 
+  /// Debounce call with delay, cancels previous executions
   Future<void> execute(
     FutureE<T> Function() func, {
     bool retry = false,
@@ -108,7 +103,7 @@ class RxV<T> {
       milliseconds: 50,
     ),
   }) async {
-    setPending();
+    setState();
     final localTime = DateTime.now();
     _lastExecution = localTime;
     await Future.delayed(delay);
@@ -129,6 +124,53 @@ class RxV<T> {
         });
       },
     ).valueOrCancellation();
+  }
+}
+
+class RxVn<T> extends RxV<T?> {
+  RxVn({T? initial, ApiState state = ApiState.loaded}) : super(initial, state: state);
+}
+
+class _RxVLoadMore<T, O> extends RxV<T> {
+  _RxVLoadMore(super.initial, {required this.initialOffset, super.state}) : offset = initialOffset;
+
+  O initialOffset;
+  O? offset;
+}
+
+extension type RxVm<T extends Iterable, Offset extends Object>._(_RxVLoadMore<T, Offset> _)
+    implements _RxVLoadMore<T, Offset> {
+  /// Use for lists with infinity loading
+  RxVm(T initial, {required Offset initialOffset, ApiState state = ApiState.loaded})
+      : this._(_RxVLoadMore(initial, initialOffset: initialOffset, state: state));
+
+  @redeclare
+  @Deprecated('Use execute')
+  Future<void> executeOnce() async {}
+
+  @redeclare
+  Future<void> execute(
+    FutureE<({T data, Offset? offset})> Function(Offset offset) func, {
+    required bool loadingMore,
+    bool emptyBeforeReload = true,
+    bool retry = false,
+  }) async {
+    if (!loadingMore) {
+      if (emptyBeforeReload) {
+        _.data = const Iterable.empty() as T;
+      }
+      _.offset = _.initialOffset;
+    }
+    if (_.offset == null) {
+      return;
+    }
+    await _.execute(
+      () => func(_.offset!).mapRight((v) {
+        _.offset = v.data.isEmpty ? null : v.offset;
+        return [if (loadingMore) ..._.data, ...v.data] as T;
+      }),
+      retry: retry,
+    );
   }
 }
 

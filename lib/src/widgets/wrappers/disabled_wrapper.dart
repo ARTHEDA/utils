@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class DisabledWrapper extends StatelessWidget {
   const DisabledWrapper({
     super.key,
-    this.disabling = false,
+    this.disabling = true,
+    this.opacity = 0.5,
     required this.child,
   });
 
   final bool disabling;
+  final double opacity;
   final Widget child;
 
   @override
@@ -15,7 +17,7 @@ class DisabledWrapper extends StatelessWidget {
     return IgnorePointer(
       ignoring: disabling,
       child: Opacity(
-        opacity: disabling ? 0.5 : 1,
+        opacity: disabling ? opacity : 1,
         child: child,
       ),
     );

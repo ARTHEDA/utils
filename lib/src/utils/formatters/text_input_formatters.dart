@@ -1,25 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 /// The class that provides methods for formatting text input.
 class AppTextInputFormatters {
   const AppTextInputFormatters._();
-
-  /// The formatter for entering a phone number.
-  static TextInputFormatter phoneFormatter({
-    ValueChanged<PhoneCountryData?>? onCountrySelected,
-    bool allowEndlessPhone = false,
-    bool shouldCorrectNumber = true,
-    String? defaultCountryCode,
-  }) =>
-      PhoneInputFormatter(
-        onCountrySelected: onCountrySelected,
-        allowEndlessPhone: allowEndlessPhone,
-        shouldCorrectNumber: shouldCorrectNumber,
-        defaultCountryCode: defaultCountryCode,
-      );
 
   /// The formatter for entering a name.
   static TextInputFormatter nameFormatter() =>
