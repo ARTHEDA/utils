@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more_definition.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more_setter.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_definition.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_setter.dart';
 
 typedef _NextChild = RenderBox? Function(RenderBox child);
 typedef _PositionChild = void Function(Offset offset, RenderBox child);

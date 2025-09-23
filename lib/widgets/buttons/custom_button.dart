@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:utils/src/utils/extensions/closures.dart';
-import 'package:utils/src/widgets/icons/svg_icon.dart';
-import 'package:utils/src/widgets/loaders/loading.dart';
+import 'package:utils/src/utils/src/extensions/closures.dart';
+import 'package:utils/widgets/icons/svg_icon.dart';
+import 'package:utils/widgets/loaders/loading.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton({

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/render_wrap_more.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more_definition.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more_element.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more_setter.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/render_wrap_more.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_definition.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_element.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_setter.dart';
 
 class WrapMore extends RenderObjectWidget {
   /// Creates a wrap layout.

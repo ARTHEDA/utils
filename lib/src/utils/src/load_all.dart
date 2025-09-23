@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:utils/src/api/types.dart';
+import 'package:utils/src/api/src/types.dart';
 
 Future<List<T>> loadAll<T, O>(
   FutureOr<(List<T>, O?)> Function(int limitPerCall, O offset) future,

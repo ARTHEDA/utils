@@ -1,4 +1,4 @@
 /// Utils
-library;
+library utils;
 
-export 'package:utils/src/analysis_options.yaml';
+export 'src/utils/utils.dart';

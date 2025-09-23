@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
-import 'package:utils/src/widgets/images/fullscreen_viewer.dart';
-import 'package:utils/src/widgets/loaders/loading.dart';
+import 'package:utils/widgets/images/fullscreen_viewer.dart';
+import 'package:utils/widgets/loaders/loading.dart';
 
 class UrlImage extends StatelessWidget {
   const UrlImage(

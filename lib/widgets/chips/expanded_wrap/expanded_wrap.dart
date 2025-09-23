@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more_definition.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more_setter.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_definition.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_setter.dart';
+
+export 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_definition.dart';
+export 'package:utils/widgets/chips/expanded_wrap/src/wrap_more_setter.dart';
 
 /// Wrap with expand and collapse function.
 class ExpandedWrap extends StatefulWidget {

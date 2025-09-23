@@ -2,8 +2,8 @@ import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/render_wrap_more.dart';
-import 'package:utils/src/widgets/chips/expanded_wrap/wrap_more.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/render_wrap_more.dart';
+import 'package:utils/widgets/chips/expanded_wrap/src/wrap_more.dart';
 
 class WrapMoreElement extends RenderObjectElement {
   /// Creates an element that uses the given widget as its configuration.
