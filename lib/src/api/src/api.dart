@@ -94,8 +94,8 @@ class RefreshInterceptor extends Interceptor {
     return (Dio(
       BaseOptions(
         baseUrl: baseUrl,
-        connectTimeout: const Duration(milliseconds: 5000),
-        receiveTimeout: const Duration(milliseconds: 3000),
+        connectTimeout: const Duration(milliseconds: 10000),
+        receiveTimeout: const Duration(milliseconds: 10000),
       ),
     )..interceptors.add(
             BearerInterceptor(
