@@ -1,5 +1,5 @@
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
-import 'package:utils/src/utils/src/extensions/closures.dart';
+import 'package:utils/src/extensions/closures.dart';
 
 extension StringExtensions on String {
   String get hardcoded => this;

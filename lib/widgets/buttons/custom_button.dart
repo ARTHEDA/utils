@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:utils/src/utils/src/extensions/closures.dart';
+import 'package:utils/src/extensions/closures.dart';
 import 'package:utils/widgets/icons/svg_icon.dart';
 import 'package:utils/widgets/loaders/loading.dart';
 

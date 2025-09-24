@@ -6,7 +6,7 @@ import 'package:either_dart/either.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:retry/retry.dart' as r;
-import 'package:utils/src/utils/src/extensions/closures.dart';
+import 'package:utils/src/extensions/closures.dart';
 
 enum ApiState {
   loaded,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:utils/src/utils/src/extensions/text_editing_controller_extensions.dart';
+import 'package:utils/src/extensions/text_editing_controller_extensions.dart';
 
 extension NList<T> on List<T>? {
   List<T>? get nullable => (this?.isEmpty ?? true) ? null : this;

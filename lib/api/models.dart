@@ -10,6 +10,12 @@ class TokenPairModel with _$TokenPairModel {
     required String refresh,
   }) = _TokenPairModel;
 
-  factory TokenPairModel.fromJson(Map<String, dynamic> json) =>
-      _$TokenPairModelFromJson(json);
+  factory TokenPairModel.fromJson(Map<String, dynamic> json) => _$TokenPairModelFromJson(json);
+}
+
+abstract class ICredentialsService {
+  String? get token;
+  String? get refreshToken;
+  Future<void> setToken(TokenPairModel tokenPair);
+  Future<void> logout();
 }

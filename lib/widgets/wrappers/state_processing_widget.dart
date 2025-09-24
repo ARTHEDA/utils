@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:sliver_tools/sliver_tools.dart';
-import 'package:utils/src/api/src/types.dart';
-import 'package:utils/src/utils/src/extensions/object_extensions.dart';
+import 'package:utils/api/types.dart';
+import 'package:utils/src/extensions/object_extensions.dart';
 import 'package:utils/widgets/loaders/loading.dart';
 import 'package:utils/widgets/wrappers/load_more_wrapper.dart';
 

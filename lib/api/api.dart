@@ -4,19 +4,12 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_utils/get_utils.dart';
-import 'package:utils/src/api/src/token_pair/models.dart';
-import 'package:utils/src/api/src/types.dart';
-import 'package:utils/src/utils/src/extensions/object_extensions.dart';
+import 'package:utils/api/models.dart';
+import 'package:utils/api/types.dart';
+import 'package:utils/src/extensions/object_extensions.dart';
 
 bool _comparePath(RequestOptions options, String path) {
   return options.path == path;
-}
-
-abstract class ICredentialsService {
-  String? get token;
-  String? get refreshToken;
-  Future<void> setToken(TokenPairModel tokenPair);
-  Future<void> logout();
 }
 
 class BearerInterceptor extends Interceptor {
