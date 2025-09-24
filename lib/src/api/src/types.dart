@@ -35,6 +35,8 @@ class ApiException implements Exception {
 
 typedef FutureE<T> = Future<Either<ApiException, T>>;
 
+typedef FutureL<T, O> = FutureE<(List<T> data, O? offset)>;
+
 class RxV<T> {
   RxV(T initial, {ApiState state = ApiState.loaded})
       : selectData = initial.obs,
@@ -131,17 +133,16 @@ class RxVn<T> extends RxV<T?> {
   RxVn({T? initial, ApiState state = ApiState.loaded}) : super(initial, state: state);
 }
 
-class _RxVLoadMore<T, O> extends RxV<T> {
+class _RxVLoadMore<T, O> extends RxV<List<T>> {
   _RxVLoadMore(super.initial, {required this.initialOffset, super.state}) : offset = initialOffset;
 
   O initialOffset;
   O? offset;
 }
 
-extension type RxVm<T extends Iterable, Offset extends Object>._(_RxVLoadMore<T, Offset> _)
-    implements _RxVLoadMore<T, Offset> {
+extension type RxVl<T, O extends Object>._(_RxVLoadMore<T, O> _) implements _RxVLoadMore<T, O> {
   /// Use for lists with infinity loading
-  RxVm(T initial, {required Offset initialOffset, ApiState state = ApiState.loaded})
+  RxVl(List<T> initial, {required O initialOffset, ApiState state = ApiState.loaded})
       : this._(_RxVLoadMore(initial, initialOffset: initialOffset, state: state));
 
   @redeclare
@@ -150,24 +151,24 @@ extension type RxVm<T extends Iterable, Offset extends Object>._(_RxVLoadMore<T,
 
   @redeclare
   Future<void> execute(
-    FutureE<({T data, Offset? offset})> Function(Offset offset) func, {
+    FutureL<T, O> Function(O offset) func, {
     required bool loadingMore,
     bool emptyBeforeReload = true,
     bool retry = false,
   }) async {
     if (!loadingMore) {
-      if (emptyBeforeReload) {
-        _.data = const Iterable.empty() as T;
+      if (emptyBeforeReload && data.isNotEmpty) {
+        data = [];
       }
-      _.offset = _.initialOffset;
+      offset = initialOffset;
     }
-    if (_.offset == null) {
+    if (offset == null) {
       return;
     }
     await _.execute(
-      () => func(_.offset!).mapRight((v) {
-        _.offset = v.data.isEmpty ? null : v.offset;
-        return [if (loadingMore) ..._.data, ...v.data] as T;
+      () => func(offset!).mapRight((v) {
+        offset = v.$1.isEmpty ? null : v.$2;
+        return [if (loadingMore) ...data, ...v.$1];
       }),
       retry: retry,
     );
