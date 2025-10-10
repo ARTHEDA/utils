@@ -7,9 +7,11 @@ import 'package:utils/widgets/loaders/loading.dart';
 class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
+    this.onPressed,
     this.text,
     this.icon,
-    this.onPressed,
+    this.childWidget,
+    this.loadingWidget,
     this.backgroundColor,
     this.foregroundColor,
     this.textStyle,
@@ -25,6 +27,9 @@ class CustomButton extends StatelessWidget {
 
   final String? text;
   final String? icon;
+
+  final Widget? childWidget;
+  final Widget? loadingWidget;
   final Color? foregroundColor;
   final Color? backgroundColor;
   final TextStyle? textStyle;
@@ -48,8 +53,8 @@ class CustomButton extends StatelessWidget {
         style: TextButton.styleFrom(
           backgroundColor: backgroundColor,
           elevation: 0,
-          side: BorderSide.none,
           padding: padding,
+          minimumSize: Size.zero,
           foregroundColor: foregroundColor,
           shape: shape,
         ),
@@ -61,33 +66,42 @@ class CustomButton extends StatelessWidget {
             key: ValueKey(isLoading),
             index: isLoading ? 0 : 1,
             children: [
-              Loading(color: style?.foregroundColor?.resolve({WidgetState.disabled})),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (text != null)
-                    Flexible(
-                      child: Text(
-                        text!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: textStyle?.copyWith(
-                          color: foregroundColor,
+              if (loadingWidget != null)
+                loadingWidget!
+              else
+                Loading(
+                  color: style?.foregroundColor?.resolve({WidgetState.disabled}),
+                  size: iconSize ?? style?.iconSize?.resolve({WidgetState.disabled}) ?? 10,
+                ),
+              if (childWidget != null)
+                childWidget!
+              else
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (text != null)
+                      Flexible(
+                        child: Text(
+                          text!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: textStyle?.copyWith(
+                            color: foregroundColor,
+                          ),
                         ),
                       ),
-                    ),
-                  if (text != null && icon != null) SizedBox(width: iconGap ?? 0),
-                  if (icon != null)
-                    SvgIcon(
-                      icon!,
-                      height: iconSize,
-                      color: foregroundColor ??
-                          style?.foregroundColor?.resolve({WidgetState.selected}),
-                    ),
-                ].let(
-                  (l) => iconAlignment == IconAlignment.end ? l : l.reversed.toList(),
+                    if (text != null && icon != null) SizedBox(width: iconGap ?? 0),
+                    if (icon != null)
+                      SvgIcon(
+                        icon!,
+                        size: iconSize,
+                        color: foregroundColor ??
+                            style?.foregroundColor?.resolve({WidgetState.selected}),
+                      ),
+                  ].let(
+                    (l) => iconAlignment == IconAlignment.end ? l : l.reversed.toList(),
+                  ),
                 ),
-              ),
             ],
           ),
         ),

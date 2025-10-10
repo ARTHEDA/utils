@@ -4,7 +4,7 @@ class Loading extends StatelessWidget {
   const Loading({
     super.key,
     this.color,
-    this.size = 16,
+    this.size = 10,
   });
 
   static Widget withHeight({required double height, Color? color, double size = 16}) {

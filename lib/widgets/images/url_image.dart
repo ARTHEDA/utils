@@ -12,7 +12,8 @@ class UrlImage extends StatelessWidget {
     this.height,
     this.fit = BoxFit.cover,
     this.borderRadius,
-    this.errorWidget,
+    this.loadingBuilder,
+    this.errorBuilder,
     this.shape = BoxShape.rectangle,
   });
 
@@ -58,7 +59,8 @@ class UrlImage extends StatelessWidget {
   final BoxFit fit;
   final BorderRadius? borderRadius;
   final BoxShape shape;
-  final Widget? errorWidget;
+  final ImageFadeLoadingBuilder? loadingBuilder;
+  final ImageFadeErrorBuilder? errorBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -72,17 +74,19 @@ class UrlImage extends StatelessWidget {
         shape: shape,
       ),
       child: url == null
-          ? errorWidget
+          ? errorBuilder?.call(context, ArgumentError.notNull())
           : ImageFade(
               image: NetworkImage(url!),
               fit: fit,
               syncDuration: Duration.zero,
-              errorBuilder: (context, _) {
-                return errorWidget ?? const SizedBox();
-              },
-              loadingBuilder: (context, _, __) {
-                return const Center(child: Loading());
-              },
+              errorBuilder: errorBuilder ??
+                  (_, __) {
+                    return const SizedBox();
+                  },
+              loadingBuilder: loadingBuilder ??
+                  (_, __, ___) {
+                    return const Center(child: Loading());
+                  },
             ),
     );
   }
