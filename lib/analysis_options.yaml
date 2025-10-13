@@ -261,3 +261,7 @@ linter:
     # Pub rules.
     package_names: true
     sort_pub_dependencies: true
+
+formatter:
+  trailing_commas: preserve
+  page_width: 100
