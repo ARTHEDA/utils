@@ -13,7 +13,11 @@ class CustomButton extends StatelessWidget {
     this.childWidget,
     this.loadingWidget,
     this.backgroundColor,
+    this.disabledBackgroundColor,
     this.foregroundColor,
+    this.disabledForegroundColor,
+    this.iconColor,
+    this.disabledIconColor,
     this.textStyle,
     this.isLoading = false,
     this.height,
@@ -21,7 +25,7 @@ class CustomButton extends StatelessWidget {
     this.iconGap,
     this.padding,
     this.shape,
-    this.iconSize,
+    this.iconHeight,
     this.iconAlignment = IconAlignment.end,
   });
 
@@ -30,34 +34,54 @@ class CustomButton extends StatelessWidget {
 
   final Widget? childWidget;
   final Widget? loadingWidget;
-  final Color? foregroundColor;
   final Color? backgroundColor;
+  final Color? disabledBackgroundColor;
+  final Color? foregroundColor;
+  final Color? disabledForegroundColor;
+  final Color? iconColor;
+  final Color? disabledIconColor;
   final TextStyle? textStyle;
   final VoidCallback? onPressed;
   final bool isLoading;
   final double? height;
   final double? width;
   final double? iconGap;
-  final double? iconSize;
+  final double? iconHeight;
   final EdgeInsets? padding;
   final OutlinedBorder? shape;
   final IconAlignment iconAlignment;
 
   @override
   Widget build(BuildContext context) {
-    final style = context.theme.textButtonTheme.style;
+    var style = context.theme.textButtonTheme.style;
+    style = ButtonStyle(
+      backgroundColor: _CustomButtonDefaultColor(
+        backgroundColor,
+        disabledBackgroundColor,
+        style?.backgroundColor,
+      ),
+      foregroundColor: _CustomButtonDefaultColor(
+        foregroundColor,
+        disabledForegroundColor,
+        style?.foregroundColor,
+      ),
+      iconColor: _CustomButtonDefaultColor(
+        iconColor ?? foregroundColor,
+        disabledIconColor ?? disabledForegroundColor,
+        style?.iconColor,
+      ),
+      elevation: const WidgetStatePropertyAll(0),
+      minimumSize: const WidgetStatePropertyAll(Size.zero),
+      padding: ButtonStyleButton.allOrNull(padding),
+      shape: ButtonStyleButton.allOrNull(shape),
+      textStyle: ButtonStyleButton.allOrNull(textStyle),
+      visualDensity: VisualDensity.standard,
+    ).merge(style);
     return SizedBox(
       height: height,
       width: width,
       child: TextButton(
-        style: TextButton.styleFrom(
-          backgroundColor: backgroundColor,
-          elevation: 0,
-          padding: padding,
-          minimumSize: Size.zero,
-          foregroundColor: foregroundColor,
-          shape: shape,
-        ),
+        style: style,
         onPressed: isLoading ? null : onPressed,
         child: AnimatedSwitcher(
           duration: 100.milliseconds,
@@ -70,8 +94,8 @@ class CustomButton extends StatelessWidget {
                 loadingWidget!
               else
                 Loading(
-                  color: style?.foregroundColor?.resolve({WidgetState.disabled}),
-                  size: iconSize ?? style?.iconSize?.resolve({WidgetState.disabled}) ?? 10,
+                  color: style.iconColor?.resolve({WidgetState.disabled}),
+                  size: iconHeight ?? style.iconSize?.resolve({WidgetState.disabled}) ?? 10,
                 ),
               if (childWidget != null)
                 childWidget!
@@ -85,18 +109,13 @@ class CustomButton extends StatelessWidget {
                           text!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: textStyle?.copyWith(
-                            color: foregroundColor,
-                          ),
                         ),
                       ),
                     if (text != null && icon != null) SizedBox(width: iconGap ?? 0),
                     if (icon != null)
                       SvgIcon(
                         icon!,
-                        size: iconSize,
-                        color: foregroundColor ??
-                            style?.foregroundColor?.resolve({WidgetState.selected}),
+                        height: iconHeight,
                       ),
                   ].let(
                     (l) => iconAlignment == IconAlignment.end ? l : l.reversed.toList(),
@@ -107,5 +126,21 @@ class CustomButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _CustomButtonDefaultColor extends WidgetStateProperty<Color?> {
+  _CustomButtonDefaultColor(this.color, this.disabled, this.theme);
+
+  final Color? color;
+  final Color? disabled;
+  final WidgetStateProperty<Color?>? theme;
+
+  @override
+  Color? resolve(Set<WidgetState> states) {
+    if (states.contains(WidgetState.disabled)) {
+      return disabled ?? theme?.resolve(states);
+    }
+    return color ?? theme?.resolve(states);
   }
 }
