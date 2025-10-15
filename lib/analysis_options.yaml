@@ -41,6 +41,7 @@ linter:
   rules:
     # Const rules.
     prefer_const_constructors_in_immutables: true
+    prefer_const_constructors: true
     unnecessary_const: true
     unnecessary_late: true
 
