@@ -19,6 +19,7 @@ class CustomButton extends StatelessWidget {
     this.iconColor,
     this.disabledIconColor,
     this.textStyle,
+    this.textAlign,
     this.isLoading = false,
     this.height,
     this.width,
@@ -31,16 +32,18 @@ class CustomButton extends StatelessWidget {
 
   final String? text;
   final String? icon;
-
   final Widget? childWidget;
   final Widget? loadingWidget;
+
   final Color? backgroundColor;
   final Color? disabledBackgroundColor;
   final Color? foregroundColor;
   final Color? disabledForegroundColor;
   final Color? iconColor;
   final Color? disabledIconColor;
+
   final TextStyle? textStyle;
+  final TextAlign? textAlign;
   final VoidCallback? onPressed;
   final bool isLoading;
   final double? height;
@@ -108,6 +111,7 @@ class CustomButton extends StatelessWidget {
                         child: Text(
                           text!,
                           maxLines: 2,
+                          textAlign: textAlign,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
