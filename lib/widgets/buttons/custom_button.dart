@@ -18,6 +18,7 @@ class CustomButton extends StatelessWidget {
     this.disabledForegroundColor,
     this.iconColor,
     this.disabledIconColor,
+    this.overlayColor,
     this.textStyle,
     this.textAlign,
     this.isLoading = false,
@@ -41,6 +42,7 @@ class CustomButton extends StatelessWidget {
   final Color? disabledForegroundColor;
   final Color? iconColor;
   final Color? disabledIconColor;
+  final Color? overlayColor;
 
   final TextStyle? textStyle;
   final TextAlign? textAlign;
@@ -64,7 +66,7 @@ class CustomButton extends StatelessWidget {
         style?.backgroundColor,
       ),
       foregroundColor: _CustomButtonDefaultColor(
-        foregroundColor,
+        foregroundColor ?? textStyle?.color,
         disabledForegroundColor,
         style?.foregroundColor,
       ),
@@ -73,6 +75,8 @@ class CustomButton extends StatelessWidget {
         disabledIconColor ?? disabledForegroundColor,
         style?.iconColor,
       ),
+      overlayColor: ButtonStyleButton.allOrNull(overlayColor) ??
+          (foregroundColor ?? textStyle?.color).let(_CustomButtonDefaultOverlay.new),
       elevation: const WidgetStatePropertyAll(0),
       minimumSize: const WidgetStatePropertyAll(Size.zero),
       padding: ButtonStyleButton.allOrNull(padding),
@@ -146,5 +150,25 @@ class _CustomButtonDefaultColor extends WidgetStateProperty<Color?> {
       return disabled ?? theme?.resolve(states);
     }
     return color ?? theme?.resolve(states);
+  }
+}
+
+class _CustomButtonDefaultOverlay extends WidgetStateProperty<Color?> {
+  _CustomButtonDefaultOverlay(this.primary);
+
+  final Color primary;
+
+  @override
+  Color? resolve(Set<WidgetState> states) {
+    if (states.contains(WidgetState.pressed)) {
+      return primary.withOpacity(0.1);
+    }
+    if (states.contains(WidgetState.hovered)) {
+      return primary.withOpacity(0.08);
+    }
+    if (states.contains(WidgetState.focused)) {
+      return primary.withOpacity(0.1);
+    }
+    return null;
   }
 }
