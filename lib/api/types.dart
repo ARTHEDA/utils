@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:async/async.dart';
+import 'package:dio/dio.dart';
 import 'package:either_dart/either.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
@@ -61,7 +62,7 @@ class RxV<T> {
   bool get isNotLoaded => state.isNotLoaded;
   bool get isNotError => state.isNotError;
 
-  void map<CustomErrorType>({
+  void map({
     void Function(T)? onData,
     void Function(Err)? onError,
   }) {
@@ -219,4 +220,24 @@ FutureE<T> safeMock<T>(
   Duration delay = const Duration(milliseconds: 500),
 }) async {
   return safe<T>(() => Future.delayed(delay, () => value));
+}
+
+FutureE<R> safeDio<R, T>(Future<Response<T?>> Function() apiCall, R Function(T) c) {
+  return safe(() async {
+    final res = await apiCall();
+    if (res.data == null && Response<T> != Response<T?>) {
+      throw const ApiException(null);
+    }
+    return c(res.data as T);
+  });
+}
+
+abstract class Converter<TResult, TFrom> {
+  /// Convert TFrom to TResult.
+  TResult convert(TFrom r);
+
+  /// Convert TFrom list to TResult list.
+  List<TResult> convertMultiple(Iterable<TFrom> inputList) => inputList.map(convert).toList();
+
+  TResult call(TFrom r) => convert(r);
 }
