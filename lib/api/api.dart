@@ -53,7 +53,7 @@ class RefreshInterceptor extends Interceptor {
   final ValueGetter<ICredentialsService> credentialsGetter;
   final String refreshPath;
   final String baseUrl;
-  final ValueGetter<FutureE<TokenPairModel> Function()> refreshGetter;
+  final ValueGetter<FutureE<TokenPairModel>> refreshGetter;
 
   Completer<bool>? completer;
 
@@ -64,7 +64,7 @@ class RefreshInterceptor extends Interceptor {
       await credentials.logout();
       return false;
     }
-    final res = await refreshGetter().call();
+    final res = await refreshGetter();
     if (res.isRight) {
       await credentials.setToken(res.right);
       return true;
