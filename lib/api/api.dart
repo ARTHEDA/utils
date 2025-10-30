@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get_utils/get_utils.dart';
 import 'package:utils/api/models.dart';
 import 'package:utils/api/types.dart';
 import 'package:utils/src/extensions/object_extensions.dart';
@@ -26,17 +25,11 @@ class BearerInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) {
-    if (options.headers['Authorization'] != null ||
-        (options.extra['secure'] as List).firstWhereOrNull(
-              (e) => e is Map<String, String> && e['name'] == 'BearerAuth',
-            ) !=
-            null) {
-      final isRefresh = _comparePath(options, refreshPath);
-      final credentials = credentialsGetter();
-      final token = isRefresh ? credentials.refreshToken : credentials.token;
-      if (token != null) {
-        options.headers['Authorization'] = 'Bearer $token';
-      }
+    final isRefresh = _comparePath(options, refreshPath);
+    final credentials = credentialsGetter();
+    final token = isRefresh ? credentials.refreshToken : credentials.token;
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
     }
     super.onRequest(options, handler);
   }
