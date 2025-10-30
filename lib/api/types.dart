@@ -90,18 +90,17 @@ class RxV<T> {
     resp.isLeft ? error = resp.left.value : data = resp.right;
   }
 
-  Future<void> executeOnce(FutureE<T> Function() func, {bool retry = false}) async {
+  Future<void> executeOnce(FutureE<T> Function() func) async {
     if (isPending) {
       return;
     }
     setState();
-    fromEither(await (retry ? retryE(func) : func()));
+    fromEither(await func());
   }
 
   /// Debounce call with delay, cancels previous executions
   Future<void> execute(
     FutureE<T> Function() func, {
-    bool retry = false,
     Duration delay = const Duration(
       milliseconds: 50,
     ),
@@ -116,7 +115,7 @@ class RxV<T> {
 
     await _completerExecution?.cancel();
 
-    _completerExecution = CancelableOperation.fromFuture(retry ? retryE(func) : func());
+    _completerExecution = CancelableOperation.fromFuture(func());
 
     await _completerExecution!.then(
       (value) {
@@ -155,7 +154,6 @@ extension type RxVl<T, O extends Object>._(_RxVLoadMore<T, O> _) implements _RxV
     FutureL<T, O> Function(O offset) func, {
     required bool loadingMore,
     bool emptyBeforeReload = true,
-    bool retry = false,
   }) async {
     if (!loadingMore) {
       if (emptyBeforeReload && data.isNotEmpty) {
@@ -171,7 +169,6 @@ extension type RxVl<T, O extends Object>._(_RxVLoadMore<T, O> _) implements _RxV
         offset = v.$1.isEmpty ? null : v.$2;
         return [if (loadingMore) ...data, ...v.$1];
       }),
-      retry: retry,
     );
   }
 }

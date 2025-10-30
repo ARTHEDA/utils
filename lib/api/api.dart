@@ -7,6 +7,8 @@ import 'package:utils/api/models.dart';
 import 'package:utils/api/types.dart';
 import 'package:utils/src/extensions/object_extensions.dart';
 
+typedef ShouldRefresh = bool Function(Response<dynamic>? response);
+
 bool _comparePath(RequestOptions options, String path) {
   return options.path == path;
 }
@@ -37,16 +39,16 @@ class BearerInterceptor extends Interceptor {
 
 class RefreshInterceptor extends Interceptor {
   RefreshInterceptor({
-    required this.baseUrl,
     required this.credentialsGetter,
     required this.refreshPath,
     required this.refreshGetter,
+    this.shouldRefresh = _defaultShouldRefresh,
   });
 
   final ValueGetter<ICredentialsService> credentialsGetter;
   final String refreshPath;
-  final String baseUrl;
   final ValueGetter<FutureE<TokenPairModel>> refreshGetter;
+  final ShouldRefresh shouldRefresh;
 
   Completer<bool>? completer;
 
@@ -73,13 +75,9 @@ class RefreshInterceptor extends Interceptor {
   }
 
   Future<Response<dynamic>> _retry(RequestOptions requestOptions) async {
-    final options = Options(
-      method: requestOptions.method,
-      headers: requestOptions.headers,
-    );
     return (Dio(
       BaseOptions(
-        baseUrl: baseUrl,
+        baseUrl: requestOptions.baseUrl,
         connectTimeout: const Duration(milliseconds: 10000),
         receiveTimeout: const Duration(milliseconds: 10000),
       ),
@@ -89,14 +87,15 @@ class RefreshInterceptor extends Interceptor {
               refreshPath: refreshPath,
             ),
           ))
-        .request<dynamic>(
-      requestOptions.path,
-      data: requestOptions.data is FormData
-          ? (requestOptions.data as FormData).clone()
-          : requestOptions.data,
-      queryParameters: requestOptions.queryParameters,
-      options: options,
+        .fetch(
+      requestOptions.data is FormData ? _recreateOptions(requestOptions) : requestOptions,
     );
+  }
+
+  RequestOptions _recreateOptions(RequestOptions options) {
+    final formData = options.data as FormData;
+    final newFormData = formData.clone();
+    return options.copyWith(data: newFormData);
   }
 
   @override
@@ -104,36 +103,43 @@ class RefreshInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    if (err.response?.statusCode == 401 && !_comparePath(err.requestOptions, refreshPath)) {
-      if (completer != null) {
-        final res = await completer!.future;
-        if (!res) {
-          return handler.reject(err);
-        }
-      } else {
-        log('refreshing token');
-        completer = Completer();
-        if (!await refreshToken()) {
-          completer?.complete(false);
-          completer = null;
-          return handler.reject(err);
-        }
-        completer?.complete(true);
-        completer = null;
-      }
-
-      final res = await safe(() => _retry(err.requestOptions));
-      if (res.isLeft) {
-        return handler.reject(
-          DioException(
-            requestOptions: err.requestOptions,
-            error: res.left.value,
-          ),
-        );
-      }
-
-      return handler.resolve(res.right);
+    if (!shouldRefresh(err.response) || _comparePath(err.requestOptions, refreshPath)) {
+      return handler.next(err);
     }
-    handler.next(err);
+    if (completer != null) {
+      final res = await completer!.future;
+      if (!res) {
+        return handler.next(err);
+      }
+    } else {
+      log('refreshing token');
+      completer = Completer();
+      if (!await refreshToken()) {
+        completer?.complete(false);
+        completer = null;
+        return handler.next(err);
+      }
+      completer?.complete(true);
+      completer = null;
+    }
+
+    final res = await safe(() => _retry(err.requestOptions));
+    if (res.isLeft) {
+      final e = res.left.value;
+      return handler.next(
+        e is DioException
+            ? e
+            : DioException(
+                requestOptions: err.requestOptions,
+                error: e,
+              ),
+      );
+    }
+
+    handler.resolve(res.right);
+  }
+
+  static bool _defaultShouldRefresh(Response<dynamic>? response) {
+    return response?.statusCode == 401;
   }
 }
