@@ -202,8 +202,7 @@ FutureE<T> safe<T>(FutureOr<T> Function() future) async {
   } on ApiException catch (e) {
     log(e.value.toString());
     return Left(e);
-  } on Exception catch (e, s) {
-    log(e.toString(), stackTrace: s);
+  } on DioException catch (e) {
     return Left(ApiException(e));
   } on Object catch (e, s) {
     log(e.toString(), stackTrace: s);
