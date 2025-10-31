@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
             elevation: const WidgetStatePropertyAll(0),
             side: const WidgetStatePropertyAll(BorderSide.none),
             minimumSize: const WidgetStatePropertyAll(Size.zero),
-            iconSize: 10.0.let(WidgetStatePropertyAll.new),
+            iconSize: 20.0.let(WidgetStatePropertyAll.new),
             padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(

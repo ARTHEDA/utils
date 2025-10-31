@@ -4,10 +4,10 @@ class Loading extends StatelessWidget {
   const Loading({
     super.key,
     this.color,
-    this.size = 16,
+    this.size = 20,
   });
 
-  static Widget withHeight({required double height, Color? color, double size = 16}) {
+  static Widget withHeight({required double height, Color? color, double size = 20}) {
     return SizedBox(
       height: height,
       child: Center(

@@ -102,7 +102,7 @@ class CustomButton extends StatelessWidget {
               else
                 Loading(
                   color: style.iconColor?.resolve({WidgetState.disabled}),
-                  size: iconHeight ?? style.iconSize?.resolve({WidgetState.disabled}) ?? 10,
+                  size: iconHeight ?? style.iconSize?.resolve({WidgetState.disabled}) ?? 20,
                 ),
               if (childWidget != null)
                 childWidget!
