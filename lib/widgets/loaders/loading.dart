@@ -4,7 +4,7 @@ class Loading extends StatelessWidget {
   const Loading({
     super.key,
     this.color,
-    this.size = 10,
+    this.size = 16,
   });
 
   static Widget withHeight({required double height, Color? color, double size = 16}) {
@@ -26,7 +26,7 @@ class Loading extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepaintBoundary(
       child: CupertinoActivityIndicator(
-        radius: size,
+        radius: size / 2,
         color: color,
       ),
     );
