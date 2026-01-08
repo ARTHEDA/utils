@@ -58,37 +58,52 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var style = context.theme.textButtonTheme.style;
-    style = ButtonStyle(
+    final themeStyle = TextButtonTheme.of(context).style;
+    final newStyle = ButtonStyle(
       backgroundColor: _CustomButtonDefaultColor(
         backgroundColor,
         disabledBackgroundColor,
-        style?.backgroundColor,
+        themeStyle?.backgroundColor,
       ),
       foregroundColor: _CustomButtonDefaultColor(
         foregroundColor ?? textStyle?.color,
         disabledForegroundColor,
-        style?.foregroundColor,
+        themeStyle?.foregroundColor,
       ),
       iconColor: _CustomButtonDefaultColor(
         iconColor ?? foregroundColor,
         disabledIconColor ?? disabledForegroundColor,
-        style?.iconColor,
+        themeStyle?.iconColor,
       ),
       overlayColor: ButtonStyleButton.allOrNull(overlayColor) ??
           (foregroundColor ?? textStyle?.color).let(_CustomButtonDefaultOverlay.new),
       elevation: const WidgetStatePropertyAll(0),
       minimumSize: const WidgetStatePropertyAll(Size.zero),
-      padding: ButtonStyleButton.allOrNull(padding),
+      padding: ButtonStyleButton.allOrNull(padding) ??
+          (height != null || width != null
+              ? WidgetStateProperty.resolveWith(
+                  (s) {
+                    final v = height != null ? 0.0 : null;
+                    final h = width != null && (textAlign == null || textAlign == TextAlign.center)
+                        ? 0.0
+                        : null;
+                    return (themeStyle?.padding
+                                ?.resolve(s)
+                                ?.resolve(Directionality.maybeOf(context)) ??
+                            const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
+                        .copyWith(left: h, right: h, top: v, bottom: v);
+                  },
+                )
+              : null),
       shape: ButtonStyleButton.allOrNull(shape),
       textStyle: ButtonStyleButton.allOrNull(textStyle),
       visualDensity: VisualDensity.standard,
-    ).merge(style);
+    ).merge(themeStyle);
     return SizedBox(
       height: height,
       width: width,
       child: TextButton(
-        style: style,
+        style: newStyle,
         onPressed: isLoading ? null : onPressed,
         child: AnimatedSwitcher(
           duration: 100.milliseconds,
@@ -101,8 +116,8 @@ class CustomButton extends StatelessWidget {
                 loadingWidget!
               else
                 Loading(
-                  color: style.iconColor?.resolve({WidgetState.disabled}),
-                  size: iconHeight ?? style.iconSize?.resolve({WidgetState.disabled}) ?? 20,
+                  color: newStyle.iconColor?.resolve({WidgetState.disabled}),
+                  size: iconHeight ?? newStyle.iconSize?.resolve({WidgetState.disabled}) ?? 20,
                 ),
               if (childWidget != null)
                 childWidget!
