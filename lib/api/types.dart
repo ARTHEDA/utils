@@ -138,6 +138,7 @@ class _RxVLoadMore<T, O> extends RxV<List<T>> {
 
   O initialOffset;
   O? offset;
+  O? currentExecutingOffset;
 }
 
 extension type RxVl<T, O extends Object>._(_RxVLoadMore<T, O> _) implements _RxVLoadMore<T, O> {
@@ -161,14 +162,20 @@ extension type RxVl<T, O extends Object>._(_RxVLoadMore<T, O> _) implements _RxV
       }
       offset = initialOffset;
     }
-    if (offset == null) {
+    if (offset == null || offset == currentExecutingOffset) {
       return;
     }
+    currentExecutingOffset = offset;
     await _.execute(
-      () => func(offset!).mapRight((v) {
-        offset = v.$1.isEmpty ? null : v.$2;
-        return [if (loadingMore) ...data, ...v.$1];
-      }),
+      () {
+        return func(currentExecutingOffset!).either((e) {
+          currentExecutingOffset = null;
+          return e;
+        }, (v) {
+          offset = v.$1.isEmpty ? null : v.$2;
+          return [if (loadingMore) ...data, ...v.$1];
+        });
+      },
     );
   }
 }
