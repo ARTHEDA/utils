@@ -162,7 +162,9 @@ extension type RxVl<T, O extends Object>._(_RxVLoadMore<T, O> _) implements _RxV
       }
       offset = initialOffset;
     }
-    if (offset == null || offset == currentExecutingOffset) {
+    if (offset == null ||
+        loadingMore &&
+            (offset == currentExecutingOffset || currentExecutingOffset == initialOffset)) {
       return;
     }
     currentExecutingOffset = offset;
@@ -173,6 +175,7 @@ extension type RxVl<T, O extends Object>._(_RxVLoadMore<T, O> _) implements _RxV
           return e;
         }, (v) {
           offset = v.$1.isEmpty ? null : v.$2;
+          currentExecutingOffset = null;
           return [if (loadingMore) ...data, ...v.$1];
         });
       },
